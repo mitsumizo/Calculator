@@ -23,6 +23,7 @@ class ViewController: UIViewController
     var currentMode:modes = .non_set
     var savedNum:Double = 0
     var lastButtonWasMode:Bool = false
+    var FloatPoint:Bool = false
     
     @IBOutlet weak var resultLabel: UILabel!
     
@@ -143,6 +144,22 @@ class ViewController: UIViewController
         
         updateText()
     }
+    
+//    @IBAction func didFloat(_ sender: Any) {
+//
+//        guard let labelDouble:Double = Double(labelString) else {
+//            return
+//        }
+//        if(FloatPoint)
+//        {
+//            return
+//        }
+//
+//        FloatPoint = true
+//        labelString = labelString.appending(".")
+//
+//        updateText()
+//    }
     
     func updateText()
     {

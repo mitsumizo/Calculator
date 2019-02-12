@@ -222,6 +222,9 @@
                                 <state key="normal" title=".">
                                     <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
+                                <connections>
+                                    <action selector="didFloat:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Ajq-fj-nws"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="12f-pD-PTV">
                                 <rect key="frame" x="313" y="730.33333333333337" width="91" height="121.66666666666663"/>
