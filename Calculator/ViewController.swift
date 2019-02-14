@@ -8,6 +8,10 @@
 
 import UIKit
 
+enum CalculatorError:Error {
+    case dividedByZero
+    case inValidValue
+}
 enum modes
 {
     case non_set
@@ -19,7 +23,7 @@ enum modes
 class ViewController: UIViewController
 {
     
-    var labelString:String = "0"
+    var onTheScreenString:String = "0"
     var currentMode:modes = .non_set
     var savedNum:Double = 0
     var lastButtonWasMode:Bool = false
@@ -40,6 +44,20 @@ class ViewController: UIViewController
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    
+    @IBAction func didNumberButton(_ sender: UIButton)
+    {
+        let stringValue:String? = sender.titleLabel?.text //stringValue = the string written on the button I don't know if it is number so need optioal
+        if(lastButtonWasMode)
+        {
+            lastButtonWasMode = false
+            onTheScreenString = "0"
+        }
+        onTheScreenString = onTheScreenString.appending(stringValue!)
+        
+        updateText()
+    }
     @IBAction func didPlusButton(_ sender: Any)
     {
         changeMode(newModes: .addtion)
@@ -59,7 +77,7 @@ class ViewController: UIViewController
     
     @IBAction func didEqualButton(_ sender: Any)
     {
-        guard let labelDouble:Double = Double(labelString) else
+        guard let labelDouble:Double = Double(onTheScreenString) else
         {
             return
         }
@@ -83,97 +101,94 @@ class ViewController: UIViewController
         }
         else if(currentMode == .division)
         {
-            savedNum /= labelDouble
+            do
+            {
+                savedNum = try calDivision(a: savedNum, b: labelDouble)
+            } catch
+            {
+                onTheScreenString = "Not a Number"
+                resultLabel.text = onTheScreenString
+                return
+            }
         }
         
         currentMode = .non_set
-        labelString = "\(savedNum)"
+        onTheScreenString = "\(savedNum)"
         updateText()
         lastButtonWasMode = true
     }
     
     @IBAction func didResetButton(_ sender: Any) {
-        labelString = "0"
+        onTheScreenString = "0"
         currentMode = .non_set
         savedNum = 0
         lastButtonWasMode = false
+        FloatPoint = false
         
-        resultLabel.text = labelString
-    }
-    
-    
-    @IBAction func didNumberButton(_ sender: UIButton)
-    {
-        let stringValue:String? = sender.titleLabel?.text //stringValue = the string written on the button I don't know if it is number so need optional
-        
-        if(lastButtonWasMode)
-        {
-            lastButtonWasMode = false
-            labelString = "0"
-        }
-        labelString = labelString.appending(stringValue!)
-        updateText()
+        resultLabel.text = onTheScreenString
     }
     
     @IBAction func didChangeSign(_ sender: Any) {
-        guard let labelDouble:Double = Double(labelString) else {
+        guard let labelDouble:Double = Double(onTheScreenString) else {
             return
         }
         
         var temp:Double
-        labelString = ""
+        onTheScreenString = ""
         
         temp = (-1) * labelDouble
         
-        labelString = labelString.appending(String(temp))
+        onTheScreenString = onTheScreenString.appending(String(temp))
         
         updateText()
     }
     
     @IBAction func didParcentage(_ sender: Any) {
         
-        guard let labelDouble:Double = Double(labelString) else {
+        guard let labelDouble:Double = Double(onTheScreenString) else {
             return
         }
         var temp:Double
-        labelString = ""
+        onTheScreenString = ""
         
         temp = labelDouble / 100
         
-        labelString = labelString.appending(String(temp))
+        onTheScreenString = onTheScreenString.appending(String(temp))
         
         updateText()
     }
     
-//    @IBAction func didFloat(_ sender: Any) {
-//
-//        guard let labelDouble:Double = Double(labelString) else {
-//            return
-//        }
-//        if(FloatPoint)
-//        {
-//            return
-//        }
-//
-//        FloatPoint = true
-//        labelString = labelString.appending(".")
-//
-//        updateText()
-//    }
-    
-    func updateText()
-    {
-        guard let labelDouble:Double = Double(labelString) else
+    @IBAction func didFloat(_ sender: Any) {
+        if(FloatPoint)
         {
             return
         }
+
+        FloatPoint = true
+        onTheScreenString = onTheScreenString.appending(".")
+    }
+    
+    func updateText()
+    {
+        guard let labelDouble:Double = Double(onTheScreenString) else
+        {
+            return
+        }
+        
         
         if(currentMode == .non_set)
         {
             savedNum = labelDouble
         }
         
-        resultLabel.text = "\(labelDouble)"
+        if(onTheScreenString.contains(".") && labelDouble != Double(Int(labelDouble)))
+        {
+            resultLabel.text = "\(labelDouble)"
+        }
+        else
+        {
+            resultLabel.text = "\(Int(labelDouble))"
+        }
     }
     
     func changeMode(newModes:modes)
@@ -185,6 +200,13 @@ class ViewController: UIViewController
         currentMode = newModes
         lastButtonWasMode = true
     }
-    
+                
+    func calDivision(a:Double, b:Double) throws -> Double
+    {
+        guard b != 0.0 else {
+            throw CalculatorError.dividedByZero
+        }
+        return a / b
+    }
 }
 
